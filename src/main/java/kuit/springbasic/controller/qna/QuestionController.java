@@ -14,60 +14,73 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
-@Controller// 컨트롤러임을 알 수 있게하는 어노테이션
-@RequiredArgsConstructor // 생성자 주입이 까다로운데 해당 어노테이션을 통해 생성자를 따로 만들필요가 없어져 주입 문제도 해결된다.
+@Controller
+@RequestMapping("/qna")
+@RequiredArgsConstructor
 public class QuestionController {
 
-    /* TODO: showQuestionForm */
     private final MemoryQuestionRepository memoryQuestionRepository;
 
-
     @GetMapping("/form")
-    public String showQuestionForm(HttpServletRequest request) {
+    public String showQuestionForm(HttpServletRequest request, Model model) {
         log.info("QuestionController.showQuestionForm");
         HttpSession session = request.getSession();
 
         if (UserSessionUtils.isLoggedIn(session)) {
-            return "/qna/form";
+            model.addAttribute("user", session.getAttribute("user"));
+            return "qna/form";
         }
 
         return "redirect:/user/login";
     }
 
-    /**
-     * TODO: createQuestion
-     * createQuestion : @ModelAttribute
-     */
     @PostMapping("/create")
-    public String createQuestion(@ModelAttribute Question newQuestion){
+    public String createQuestion(@ModelAttribute Question newQuestion, HttpSession session) {
         log.info("QuestionController.createQuestion");
+        User user = (User) session.getAttribute("user");
+        newQuestion.setWriter(user.getUserId());
         memoryQuestionRepository.insert(newQuestion);
         return "redirect:/";
     }
 
-
-
-    /**
-     * TODO: showUpdateQuestionForm
-     * showUpdateQuestionFormV1 : @RequestParam, HttpServletRequest, Model
-     * showUpdateQuestionFormV2 : @RequestParam, @SessionAttribute, Model
-     */
     @GetMapping("/updateForm")
-    public String showUpdateQuestionForm(@RequestParam int questionId, @SessionAttribute("user") User user
-            , Model model) {
-        //로그인 안됬으면 로그인 페이지로
+    public String showUpdateQuestionForm(@RequestParam int questionId, @SessionAttribute("user") User user, Model model) {
         if (user == null) {
             return "redirect:/user/login";
         }
         Question question = memoryQuestionRepository.findByQuestionId(questionId);
         if (!question.isSameUser(user)) {
-            return "/qna/show?questionId=" + questionId;
+            return "redirect:/qna/show?questionId=" + questionId;
         }
         model.addAttribute("question", question);
-        return "/qna/updateForm";
+        return "qna/updateForm";
     }
-    /**
-     * TODO: updateQuestion
-     */
+
+    @PostMapping("/update")
+    public String updateQuestion(@ModelAttribute Question updatedQuestion, HttpSession session) {
+        log.info("QuestionController.updateQuestion");
+        User user = (User) session.getAttribute("user");
+        Question question = memoryQuestionRepository.findByQuestionId(updatedQuestion.getQuestionId());
+        if (!question.isSameUser(user)) {
+            return "redirect:/qna/show?questionId=" + updatedQuestion.getQuestionId();
+        }
+        question.setTitle(updatedQuestion.getTitle());
+        question.setContents(updatedQuestion.getContents());
+        memoryQuestionRepository.update(question);
+        return "redirect:/qna/show?questionId=" + updatedQuestion.getQuestionId();
+    }
+
+    @GetMapping("/show")
+    //@RequestParam("questionId")이거로 파라매터 추출하는거 맞나욥..?
+    public String showQnA(@RequestParam("questionId") int questionId, Model model) {
+        log.info("QnAController.showQnA");
+
+        Question question = memoryQuestionRepository.findByQuestionId(questionId);
+        model.addAttribute("question", question);
+
+        return "qna/show";
+    }
+
+
 
 }

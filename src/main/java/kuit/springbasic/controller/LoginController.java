@@ -28,6 +28,11 @@ public class LoginController {
     /**
      * TODO: showLoginFailed
      */
+    @PostMapping("/loginFailed")
+    public String showLoginFailedPage(){
+        log.info("LoginController.showLoginFailed");
+        return "/user/loginFailed";
+    }
 
     /**
      * TODO: login
@@ -35,6 +40,7 @@ public class LoginController {
      */
     @PostMapping("/login")
     public String login(@ModelAttribute User loggedInUser, HttpServletRequest request) {
+        log.info("LoginController.logIn");
 
         User user = memoryUserRepository.findByUserId(loggedInUser.getUserId());
 
@@ -44,11 +50,17 @@ public class LoginController {
             session.setAttribute("user", user);
             return "redirect:/";
         }
-        return "redirect: /user/loginFailed";
+        return "redirect:/user/loginFailed";
     }
-
     /**
      * TODO: logout
      */
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        log.info("LoginController.logOut");
+        HttpSession session = request.getSession();
+        session.removeAttribute("user");
+        return "redirect:/";
+    }
 
 }

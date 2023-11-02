@@ -59,6 +59,7 @@ public class UserController {
     @RequestMapping("/updateForm")
     String showUserUpdateForm(@RequestParam("userId") String userId, HttpServletRequest request){
         User user = memoryUserRepository.findByUserId(userId);
+
         if (user != null) {
             request.setAttribute("user",user);
             return "/user/updateForm";
@@ -73,5 +74,11 @@ public class UserController {
     String updateUser(@ModelAttribute User user){
         memoryUserRepository.update(user);
         return "redirect:/user/list";
+    }
+
+    @RequestMapping("/profile.html")
+    String profileUser(@ModelAttribute User user){
+        memoryUserRepository.update(user);
+        return "redirect:/user/profile";
     }
 }

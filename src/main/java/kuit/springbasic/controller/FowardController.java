@@ -13,13 +13,11 @@ public class FowardController {
 
 
     /*
-    *fowardcontroller 를 언제 쓰는지 모르겠습니다.
+    *fowardcontroller의 사용 용도를 모르겠습니다.
     * */
-//    @GetMapping("/user/loginForm")
-//    public ModelAndView loginForm(){
-//        log.info("FowardController.showForward");
-//
-//        return new ModelAndView("/user/loginForm");
-//    }
+    @GetMapping("/user/loginFailed")
+    public ModelAndView loginFailedForm() {
+        return new ModelAndView("/user/loginFailed");
+    }
 
 }
