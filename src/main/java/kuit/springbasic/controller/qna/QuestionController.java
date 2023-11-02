@@ -61,8 +61,12 @@ public class QuestionController {
         log.info("QuestionController.updateQuestion");
         User user = (User) session.getAttribute("user");
         Question question = memoryQuestionRepository.findByQuestionId(updatedQuestion.getQuestionId());
+
+        if(!UserSessionUtils.isLoggedIn(session)){
+            return "redirect:/user/login";
+        }
         if (!question.isSameUser(user)) {
-            return "redirect:/qna/show?questionId=" + updatedQuestion.getQuestionId();
+            return "redirect:/";
         }
         question.setTitle(updatedQuestion.getTitle());
         question.setContents(updatedQuestion.getContents());
