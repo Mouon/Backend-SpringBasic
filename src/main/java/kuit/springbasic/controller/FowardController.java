@@ -15,9 +15,6 @@ public class FowardController {
     /*
     *fowardcontroller의 사용 용도를 모르겠습니다.
     * */
-    @GetMapping("/user/loginFailed")
-    public ModelAndView loginFailedForm() {
-        return new ModelAndView("/user/loginFailed");
-    }
+
 
 }
