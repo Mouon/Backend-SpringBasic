@@ -59,7 +59,7 @@ public class QuestionController {
     @PostMapping("/update")
     public String updateQuestion(@ModelAttribute Question updatedQuestion, HttpSession session) {
         log.info("QuestionController.updateQuestion");
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");//User의 객체로 user 속성을 뽑ㅑ
         Question question = memoryQuestionRepository.findByQuestionId(updatedQuestion.getQuestionId());
 
         if(!UserSessionUtils.isLoggedIn(session)){

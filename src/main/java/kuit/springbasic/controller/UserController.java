@@ -58,10 +58,9 @@ public class UserController {
      */
     @RequestMapping("/updateForm")
     String showUserUpdateForm(@RequestParam("userId") String userId, HttpServletRequest request){
-        User user = memoryUserRepository.findByUserId(userId);
-
+        User user = memoryUserRepository.findByUserId(userId);//id와 일치하는 user정보 찾아서 user에 할당
         if (user != null) {
-            request.setAttribute("user",user);
+            request.setAttribute("user",user);//사용자 정보를 "user"라는 "attribute"이름으로 저장
             return "/user/updateForm";
         }
         return "redirect:/";

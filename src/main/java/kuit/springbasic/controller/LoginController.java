@@ -44,12 +44,13 @@ public class LoginController {
 
         User user = memoryUserRepository.findByUserId(loggedInUser.getUserId());
 
-        if (user != null && user.getUserId().equals(loggedInUser.getUserId()) && user.getPassword().equals(loggedInUser.getPassword())) {
+        if (user != null && user.isSameUser(loggedInUser)) {
 
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             return "redirect:/";
         }
+
         return "redirect:/user/loginFailed";
     }
     /**
