@@ -2,8 +2,9 @@ package kuit.springbasic.controller.qna;
 
 
 import java.sql.SQLException;
-import kuit.springbasic.db.MemoryAnswerRepository;
-import kuit.springbasic.db.MemoryQuestionRepository;
+
+import kuit.springbasic.dao.AnswerDao;
+import kuit.springbasic.dao.QuestionDao;
 import kuit.springbasic.domain.Answer;
 import kuit.springbasic.domain.Question;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class AnswerController {
 
-    private final MemoryAnswerRepository memoryAnswerRepository;
-    private final MemoryQuestionRepository memoryQuestionRepository;
+    private final AnswerDao answerDao;
+    private final QuestionDao questionDao;
 
     /**
      * TODO: addAnswer - @PostMapping
@@ -30,11 +31,11 @@ public class AnswerController {
     public Answer addAnswer(@ModelAttribute Answer answer) throws SQLException {
         log.info("AnswerController.addAnswer");
 
-        Answer savedAnswer = memoryAnswerRepository.insert(answer);
+        Answer savedAnswer = answerDao.insert(answer);
 
-        Question question = memoryQuestionRepository.findByQuestionId(answer.getQuestionId());
+        Question question = questionDao.findByQuestionId(answer.getQuestionId());
         question.increaseCountOfAnswer();
-        memoryQuestionRepository.updateCountOfAnswer(question);
+        questionDao.updateCountOfAnswer(question);
 
         return savedAnswer;
     }

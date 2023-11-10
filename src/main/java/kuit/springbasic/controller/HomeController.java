@@ -1,6 +1,6 @@
 package kuit.springbasic.controller;
 
-import kuit.springbasic.db.MemoryQuestionRepository;
+import kuit.springbasic.dao.QuestionDao;
 import kuit.springbasic.domain.Question;
 import lombok.RequiredArgsConstructor;//자동 주입
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +16,13 @@ import java.util.List;
 
 public class HomeController {
 
-    private final MemoryQuestionRepository memoryQuestionRepository;
+    private final QuestionDao questionDao;
 
     @GetMapping("/")
     public String showHome(Model model) {
         log.info("HomeController.home");
 
-        List<Question> questions = memoryQuestionRepository.findAll();
+        List<Question> questions = questionDao.findAll();
         model.addAttribute("questions", questions);
 
         return "home";

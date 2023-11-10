@@ -2,7 +2,7 @@ package kuit.springbasic.controller.qna;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import kuit.springbasic.db.MemoryQuestionRepository;
+import kuit.springbasic.dao.QuestionDao;
 import kuit.springbasic.domain.Question;
 import kuit.springbasic.domain.User;
 import kuit.springbasic.util.UserSessionUtils;
@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.sql.SQLException;
 
 
 @Slf4j
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class QuestionController {
 
-    private final MemoryQuestionRepository memoryQuestionRepository;
+    private final QuestionDao questionDao;
 
     @GetMapping("/form")
     public String showQuestionForm(HttpServletRequest request, Model model) {
@@ -39,7 +42,7 @@ public class QuestionController {
         log.info("QuestionController.createQuestion");
         User user = (User) session.getAttribute("user");
         newQuestion.setWriter(user.getUserId());
-        memoryQuestionRepository.insert(newQuestion);
+        questionDao.insert(newQuestion);
         return "redirect:/";
     }
 
@@ -48,7 +51,7 @@ public class QuestionController {
         if (user == null) {
             return "redirect:/user/login";
         }
-        Question question = memoryQuestionRepository.findByQuestionId(questionId);
+        Question question = questionDao.findByQuestionId(questionId);
         if (!question.isSameUser(user)) {
             return "redirect:/qna/show?questionId=" + questionId;
         }
@@ -57,10 +60,11 @@ public class QuestionController {
     }
 
     @PostMapping("/update")
-    public String updateQuestion(@ModelAttribute Question updatedQuestion, HttpSession session) {
+    public String updateQuestion(@ModelAttribute Question updatedQuestion, HttpSession session, RedirectAttributes redirectAttributes) {
+
         log.info("QuestionController.updateQuestion");
         User user = (User) session.getAttribute("user");//User의 객체로 user 속성을 뽑ㅑ
-        Question question = memoryQuestionRepository.findByQuestionId(updatedQuestion.getQuestionId());
+        Question question = questionDao.findByQuestionId(updatedQuestion.getQuestionId());
 
         if(!UserSessionUtils.isLoggedIn(session)){
             return "redirect:/user/login";
@@ -70,16 +74,15 @@ public class QuestionController {
         }
         question.setTitle(updatedQuestion.getTitle());
         question.setContents(updatedQuestion.getContents());
-        memoryQuestionRepository.update(question);
+        questionDao.update(question);
         return "redirect:/qna/show?questionId=" + updatedQuestion.getQuestionId();
     }
 
     @GetMapping("/show")
     //@RequestParam("questionId")이거로 파라매터 추출하는거 맞나욥..?
-    public String showQnA(@RequestParam("questionId") int questionId, Model model) {
+    public String showQnA(@RequestParam("questionId") int questionId, Model model) throws SQLException {
         log.info("QnAController.showQnA");
-
-        Question question = memoryQuestionRepository.findByQuestionId(questionId);
+        Question question = questionDao.findByQuestionId(questionId);
         model.addAttribute("question", question);
 
         return "qna/show";

@@ -1,15 +1,18 @@
 package kuit.springbasic.controller.qna;
 
 
-import ch.qos.logback.core.model.Model;
-import kuit.springbasic.db.MemoryAnswerRepository;
-import kuit.springbasic.db.MemoryQuestionRepository;
+import kuit.springbasic.dao.AnswerDao;
+import kuit.springbasic.dao.QuestionDao;
+import kuit.springbasic.domain.Answer;
 import kuit.springbasic.domain.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
@@ -17,15 +20,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QnAController {
 
-    private final MemoryAnswerRepository memoryAnswerRepository;
-    private final MemoryQuestionRepository memoryQuestionRepository;
+    private final AnswerDao answerDao;
+    private final QuestionDao questionDao;
+    /**
+     * TODO: showQnA
+     */
+    @RequestMapping("/show")
+    public String showQnA(@RequestParam Long questionId, Model model) throws SQLException {
+        log.info("QuestionController.showQnA");
 
-//    @GetMapping("/qna")
-//    public String showQnA(Model model) {
-//        log.info("QnAController.showQnA");
-//
-//        return "qna/show";
-//    }
+        Question question = questionDao.findByQuestionId(questionId);
+        List<Answer> answers = answerDao.findAllByQuestionId(questionId);
+        model.addAttribute("question", question);
+        model.addAttribute("answers", answers);
+
+        return "/qna/show";
+    }
 
 
 }

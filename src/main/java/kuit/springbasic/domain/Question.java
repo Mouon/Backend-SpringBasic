@@ -11,18 +11,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-
+@EqualsAndHashCode(exclude = {"questionId"})
 public class Question {
-    private int questionId;
+    private Long questionId;
     private String writer;
     private String title;
     private String contents;
     private Date createdDate;
-    private int countOfAnswer;
+    private Long countOfAnswer;
 
     // 새로운 질문 객체를 생성할 때 사용
-    public Question(String writer, String title, String contents, int countOfAnswer) {
-        this.questionId = 0;
+    public Question(String writer, String title, String contents, Long countOfAnswer) {
+        this.questionId = 0L;
         this.writer = writer;
         this.title = title;
         this.contents = contents;
