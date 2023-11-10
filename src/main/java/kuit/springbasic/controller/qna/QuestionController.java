@@ -78,6 +78,7 @@ public class QuestionController {
         return "redirect:/qna/show?questionId=" + updatedQuestion.getQuestionId();
     }
 
+
     @GetMapping("/show")
     //@RequestParam("questionId")이거로 파라매터 추출하는거 맞나욥..?
     public String showQnA(@RequestParam("questionId") int questionId, Model model) throws SQLException {
